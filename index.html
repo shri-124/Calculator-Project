@@ -58,6 +58,7 @@
             color: #333;
             word-wrap: break-word;
             word-break: break-all;
+            overflow: hidden;
         }
 
         .button-grid {
@@ -230,6 +231,8 @@
             }
 
             appendNumber(number) {
+                // Prevent adding more digits if already at 13 character limit
+                if (this.currentOperand.toString().length >= 13) return;
                 if (number === '.' && this.currentOperand.includes('.')) return;
                 this.currentOperand = this.currentOperand.toString() + number.toString();
             }
@@ -307,11 +310,23 @@
             }
 
             updateDisplay() {
+                // Limit current operand to 13 characters
+                let displayValue = this.currentOperand.toString();
+                if (displayValue.length > 13) {
+                    displayValue = displayValue.substring(0, 13);
+                    this.currentOperand = displayValue;
+                }
+                
                 this.currentOperandElement.innerText = 
-                    this.getDisplayNumber(this.currentOperand) || '0';
+                    this.getDisplayNumber(displayValue) || '0';
+                    
                 if (this.operation != null) {
+                    let prevDisplay = this.getDisplayNumber(this.previousOperand);
+                    if (prevDisplay.length > 13) {
+                        prevDisplay = prevDisplay.substring(0, 10) + '...';
+                    }
                     this.previousOperandElement.innerText = 
-                        `${this.getDisplayNumber(this.previousOperand)} ${this.operation}`;
+                        `${prevDisplay} ${this.operation}`;
                 } else {
                     this.previousOperandElement.innerText = '';
                 }
